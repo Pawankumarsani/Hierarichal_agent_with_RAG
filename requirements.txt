@@ -1,0 +1,12 @@
+langchain
+langgraph
+langchain-community
+langchain-core
+langchain-groq
+langgraph-supervisor
+langchain-tavily
+langchain-huggingface
+faiss-cpu
+sentence-transformers
+python-dotenv
+langchain-experimental
