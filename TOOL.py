@@ -19,7 +19,8 @@ from langchain_experimental.utilities import PythonREPL
 
 _TEMP_DIRECTORY = TemporaryDirectory()
 WORKING_DIRECTORY = Path(_TEMP_DIRECTORY.name)
-
+WORKING_DIRECTORY = Path("output")
+WORKING_DIRECTORY.mkdir(exist_ok=True)
 
 os.environ["GROQ_API_KEY"]=os.getenv("GROQ_API_KEY")
 os.environ["TAVILY_API_KEY"]=os.getenv("TAVILY_API_KEY")
@@ -81,7 +82,7 @@ def create_outline(
     file_name: Annotated[str, "File path to save the outline."],
 ) -> Annotated[str, "Path of the saved outline file."]:
     """Create and save an outline."""
-    with (WORKING_DIRECTORY / file_name).open("w") as file:
+    with (WORKING_DIRECTORY / file_name).open("w", encoding="utf-8") as file:
         for i, point in enumerate(points):
             file.write(f"{i + 1}. {point}\n")
     return f"Outline saved to {file_name}"
@@ -92,9 +93,12 @@ def write_document(
     file_name: Annotated[str, "File path to save the document."],
 ) -> Annotated[str, "Path of the saved document file."]:
     """Create and save a text document."""
-    with (WORKING_DIRECTORY / file_name).open("w") as file:
-        file.write(content)
-    return f"Document saved to {file_name}"
+    try:
+        with (WORKING_DIRECTORY / file_name).open("w", encoding="utf-8") as file:
+            file.write(content)
+        return f"Document saved to {file_name}"
+    except Exception as e:
+        return f"Error saving document: {e!r}"
 
 @tool
 def edit_document(
@@ -106,7 +110,7 @@ def edit_document(
 ) -> Annotated[str, "Path of the edited document file."]:
     """Edit a document by inserting text at specific line numbers."""
 
-    with (WORKING_DIRECTORY / file_name).open("r") as file:
+    with (WORKING_DIRECTORY / file_name).open("r", encoding="utf-8") as file:
         lines = file.readlines()
 
     sorted_inserts = sorted(inserts.items())
@@ -117,7 +121,7 @@ def edit_document(
         else:
             return f"Error: Line number {line_number} is out of range."
 
-    with (WORKING_DIRECTORY / file_name).open("w") as file:
+    with (WORKING_DIRECTORY / file_name).open("w", encoding="utf-8") as file:
         file.writelines(lines)
 
     return f"Document edited and saved to {file_name}"
@@ -144,7 +148,7 @@ def read_document(
     end: Annotated[Optional[int], "The end line. Default is None"] = None,
 ) -> str:
     """Read the specified document."""
-    with (WORKING_DIRECTORY / file_name).open("r") as file:
+    with (WORKING_DIRECTORY / file_name).open("r", encoding="utf-8") as file:
         lines = file.readlines()
     if start is None:
         start = 0

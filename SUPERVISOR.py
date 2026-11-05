@@ -55,12 +55,7 @@ except Exception as e:
     print(super_graph.get_graph(xray=True).draw_mermaid())
     
 if __name__=="__main__":
-    
-    response = super_graph.invoke(
-        {"messages": [HumanMessage(content="Write about transformer variants in production deployments.")]},
-        config={"recursion_limit": 25},
-    )
-    
-    final = response["messages"][-1].content
-    print("\n--- FINAL ANSWER ---\n")
-    print(final)
+    from TOOL import WORKING_DIRECTORY
+
+    latest = max(WORKING_DIRECTORY.glob("*"), key=lambda p: p.stat().st_mtime)
+    print(latest.read_text(encoding="utf-8"))
